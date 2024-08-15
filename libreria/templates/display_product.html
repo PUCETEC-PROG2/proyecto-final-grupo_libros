@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Libro{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="d-flex justify-content-center">
+            <img src="{{ product.picture.url }}" alt="{{ product }}" style="width:300; height:300px; margin-bottom: 2em;">
+        </div>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>Código:</strong> {{ product.code }}</li>
+            <li class="list-group-item"><strong>Título:</strong> {{ product.book_title }}</li>
+            <li class="list-group-item"><strong>Año:</strong> {{ product.year }}</li>
+            <li class="list-group-item"><strong>Autor:</strong> {{ product.author }}</li>
+            <li class="list-group-item"><strong>Editorial:</strong> {{ product.publisher }}</li>
+            <li class="list-group-item"><strong>Categoría:</strong> {{ product.category }}</li>
+            <li class="list-group-item"><strong>Precio: ${{ product.price }}</strong></li> 
+            <li class="list-group-item"><strong>Unidades en existencia:</strong> {{ product.stock }}</li>
+            <li class="list-group-item"><strong>Condición:</strong> {{ product.condition }}</li>
+        </ul>
+        <div class="d-flex justify-content-center">
+            <button onclick="window.location.href='/product'" class="btn btn-primary" style="color:white">Regresar</button>
+        </div>
+    </div>
+{% endblock content %}

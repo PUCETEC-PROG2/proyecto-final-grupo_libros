@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Productos{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 5em; margin-bottom: 5em;">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center"><strong>Agregar producto</strong></h2>
+                        <form method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <a href="{%url "libreria:list_product" %}">
+                                    <button style="margin-top: 1em;" class="btn btn-outline-primary btn-lg btn-block" type="submit">
+                                        <h6>Guardar</h6>
+                                    </button>
+                                </a>
+                            </div> 
+                        </form>
+                    </div> 
+                </div> 
+            </div>                
+        </div>
+    </div>
+{% endblock content %}

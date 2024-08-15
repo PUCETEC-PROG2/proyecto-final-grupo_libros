@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Agregar Compra{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center" style="margin-top: 5em; margin-bottom: 5em;">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center"><strong>Agregar Compra</strong></h2>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ purchase_form.as_p }}
+                            
+                            <div id="detalles-container">
+                                {{ formset.management_form }}
+                                {% for form in formset %}
+                                    <div class="form-group detalle-form">
+                                        {{ form.as_p }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <button id="agregar-detalle" type="button" class="btn btn-outline-secondary btn-lg">
+                                    <h6>Agregar Otro</h6>
+                                </button>
+                            </div>
+
+                            <div class="d-flex justify-content-center mt-3">
+                                <h4>Total: $<span id="total">0.00</span></h4>
+                            </div>
+
+                            <div class="d-flex justify-content-center mt-3">
+                                <button class="btn btn-outline-primary btn-lg btn-block" type="submit">
+                                    <h6>Guardar</h6>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>                
+        </div>
+    </div>
+
+    <script>
+        function actualizarTotal() {
+            let total = 0;
+            document.querySelectorAll('#detalles-container .detalle-form').forEach(form => {
+                const cantidadProducto = parseFloat(form.querySelector('input[name$=amount_product]').value) || 0;
+                const precioUnitarioProducto = parseFloat(form.querySelector('input[name$=unit_price_product]').value) || 0;
+
+                total += cantidadProducto * precioUnitarioProducto;
+            });
+            // Actualiza el total en el HTML
+            document.getElementById('total').textContent = total.toFixed(2);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('detalles-container');
+            const originalDetail = container.querySelector('.detalle-form');
+            const template = originalDetail ? originalDetail.innerHTML.replace(/form-0-/g, '') : '';
+
+            container.addEventListener('input', function(event) {
+                // Solo actualiza el total 
+                if (event.target.matches('input[name$=amount_product], input[name$=unit_price_product]')) {
+                    actualizarTotal();
+                }
+            });
+
+            document.getElementById('agregar-detalle').addEventListener('click', function() {
+                const totalForms = parseInt(document.querySelector('#id_form-TOTAL_FORMS').value, 10);
+                const nuevoDetalle = document.createElement('div');
+                nuevoDetalle.classList.add('form-group', 'detalle-form');
+                
+                nuevoDetalle.innerHTML = `
+                    <input type="hidden" name="form-${totalForms}-DELETE" value="0">
+                    ${template.replace(/form-0-/g, `form-${totalForms}-`)}
+                    <button type="button" class="btn btn-danger btn-sm eliminar-detalle">Eliminar</button>
+                `;
+
+                container.appendChild(nuevoDetalle);
+                document.querySelector('#id_form-TOTAL_FORMS').value = totalForms + 1;
+                actualizarTotal();
+            });
+
+            container.addEventListener('click', function(event) {
+                if (event.target.classList.contains('eliminar-detalle')) {
+                    const detalle = event.target.closest('.detalle-form');
+                    detalle.querySelector('input[name$="-DELETE"]').value = "1";
+                    detalle.style.display = "none";
+                    actualizarTotal();
+                }
+            });
+        });
+    </script>
+{% endblock %}

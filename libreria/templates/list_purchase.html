@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Compras{% endblock title %}
+{% block content %}
+    <div class="container">
+        <p style="font-size: 1.7em; margin-top: 1em; margin-bottom: 1em;" class= "text-center"><strong>Compras</strong></p>
+        {% if user.is_authenticated %}
+            <div class="d-flex">
+                <a href="{% url "libreria:add_purchase" %}">
+                    <button style=" margin-bottom: 2em;" class="btn btn-outline-primary btn-lg btn-block">
+                        <h6>Agregar Compra</h6>
+                    </button>
+                </a>
+            </div>
+        {% endif %}
+        <ul class="list-group">
+            {% for purchase in purchases %}
+                <li class="list-group-item">
+                    <a href="{{ purchase.id }}" style=" margin-right: 1em;">
+                        {{ purchase.purchase }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="d-flex justify-content-center">
+            <button onclick="window.location.href='/'" class="btn btn-primary" style="color:white">Regresar</button>
+        </div>
+    </div>
+{% endblock content %}

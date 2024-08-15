@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        {% load static %}
-        <title>{% block  title %}{% endblock title %}</title>
-        <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    </head>
+  {% load static %}
+  <head>
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script>
+      function confirmScript(event, type) {
+        var result = confirm(`¿Estás seguro que quieres ${type}`);
+          if (!result) {
+            event.preventDefault();
+          }
+      }
+    </script>    
+  </head>
     <body>
         <div class="container">
-            <div class="bg-primary text-white p-4 text-center">
-                <img src={% static "logo.jpg" %}>
+            <div class="p-4 text-left">
+                <img src={% static "logo.jpg" %} style="height:310px; object-fit: scale-down;">
                 <h1>Werther</h1>
             </div>
-            <nav class="navbar navbar-expand-lg navbar-dark navbar-primary bg-primary">
+            <nav class="navbar navbar-expand-lg navbar-dark navbar-primary bg-secondary">
                 <div class="container-fluid">
                   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,24 +29,27 @@
                   <div class="collapse navbar-collapse" id="navbarText">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url "libreria:index" %}">Libros</a>
+                        <a class="nav-link" href="{% url "libreria:index" %}">Inicio</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url "libreria:display_categorias" %}">Categorias</a>
+                        <a class="nav-link" href="{% url "libreria:list_category" %}">Categorias</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url "libreria:list_product" %}">Libros</a>
                       </li>
                       {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url "libreria:display_clientes" %}">Clientes</a>
+                            <a class="nav-link" href="{% url "libreria:list_client" %}">Clientes</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" href="{% url "libreria:display_compras" %}">Compras</a>
+                          <a class="nav-link" href="{% url "libreria:list_purchase" %}">Compras</a>
                       </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url "logout" %}">Logout</a>
+                            <a class="nav-link" href="{% url "logout" %}" onclick="confirmScript(event, 'salir?')">Cerrar Sesión</a>
                         </li>
                       {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url "pokedex:login" %}">Login</a>
+                            <a class="nav-link" href="{% url "libreria:login" %}">Acceder</a>
                         </li>
                       {% endif %}
                     </ul>

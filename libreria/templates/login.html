@@ -1,1 +1,23 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Werther{% endblock title %}
+{% block content %}
+<div class="row d-flex justify-content-center">
+    <div class="col-md-6">
+        <h2>Inicio de sesión</h2>
+        <form action="{% url "libreria:login" %}" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="username">Usuario:</label>
+                <input type="text" name="username" id="username" required></input>
+            </div>
+            <div>
+                <label for="password">Contraseña:</label>
+                <input type="password" name="password" id="password" required></input>
+            </div>
+            <button type="submit" class="btn btn-primary" style="color:white">Ingresar</button>
+            <button onclick="window.location.href='/'" class="btn btn-primary" style="color:white">Cancelar</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

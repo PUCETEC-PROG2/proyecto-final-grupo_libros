@@ -1,37 +1,49 @@
 {% extends "base.html" %}
-{% block title %}Libreria{% endblock title %}
+{% load static %}
+{% block title %}Werther{% endblock title %}
 {% block content %}
-    {% comment %} <p class="p-2">Hola, este es tu primer sitio en Django</p>
-    <a href="{% url "libreria:" %}"> Crear Pokemon</a> {% endcomment %}
-        {% comment %} <ul class="list-group">
-            {% for pokemon in pokemons %}
-            <li class="list-group-item">
-                <a href="pokemon/{{ pokemon.pk }}">{{ pokemon | capfirst }}</a>
-                <p>{{pokemon.type}}</p>
-            </li>
-            {% endfor %}
-        </ul> {% endcomment %}
-        <div class="card-group">
-            {% for pokemon in pokemons %}
-                <div class="card">
-                    <img src="{{ pokemon.picture.url }}" alt="" style="height:210px; object-fit: scale-down;">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ pokemon }}</h5>
-                        <p class="card-text">Entrenador: {{ pokemon.trainer }}</p>
-                        <p class="card-text">Peso: {{ pokemon.weight }}</p>
-                        <a href="pokemon/{{ pokemon.id }}" class="btn btn-primary">
-                            <i class="fa-solid fa-eye"></i>
-                        </a>
-                        {% if user.is_authenticated %} 
-                            <a href="edit_pokemon/{{ pokemon.id }}" class="btn btn-primary">
-                                <i class="fa-solid fa-pencil"></i>
-                            </a>
-                            <a href="delete_pokemon/{{ pokemon.id }}" class="btn btn-danger">
-                                <i class="fa-solid fa-trash"></i>
-                            </a>
-                        {% endif %}
-                    </div>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <a href="category/">
+                        <button class="btn btn-outline-primary btn-lg btn-block" width="128" height="128">
+                            <img src="{% static 'category.jpg' %}" class="img-fluid">
+                            <span>Categorías</span>
+                        </button>
+                    </a>
                 </div>
-            {% endfor %}
+                <div class="col-6 mb-3">
+                    <a href="product/">
+                        <button class="btn btn-outline-primary btn-lg btn-block" width="128" height="128">
+                            <img src="{% static 'product.jpg' %}" class="img-fluid">
+                            <span>Libros</span>
+                        </button>
+                    </a>
+                </div>
+                {% if user.is_authenticated %}
+                    <div class="col-6 mb-3">
+                        <a href="client/">
+                            <button class="btn btn-outline-primary btn-lg btn-block"  width="128" height="128">
+                                <img src="{% static 'client.jpg' %}" class="img-fluid">
+                                <span>Clientes</span>
+                            </button>
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a href="purchase/">
+                            <button class="btn btn-outline-primary btn-lg btn-block"  width="128" height="128">
+                                <img src="{% static 'purchase.jpg' %}" class="img-fluid">
+                                <span>Compras</span>
+                            </button>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
+    </div>
+</div>
+
 {% endblock content %}
