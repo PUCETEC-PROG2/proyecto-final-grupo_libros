@@ -3,13 +3,17 @@
 {% block title %}{{ purchase.date }}{% endblock title %}
 {% block content %}
     <div class="container">
-        <p style="font-size: 1.7em; margin-top: 1em; margin-bottom: 1em;" class= "text-center"><strong>{{ purchase.purchase | capfirst }}</strong></p>
-        <ul class="list-group">
-            <li class="list-group-item"><strong>Producto:</strong> {{ purchase.amount_product }}x {{ purchase.product }}</li> 
-            <li class="list-group-item"><strong>Total:</strong> {{ purchase.purchase.total_price }}</li> 
+        <p style="font-size: 1.8em; margin-top: 1em; margin-bottom: 1em;" class= "text-center"><strong>{{ purchase.purchase | capfirst }}</strong></p>
+        <ul class="list-group" style="font-size: 1.3em;">
+            {% comment %} {% for detail in purchase.purchase_detail_set.all %} {% endcomment %}
+                <li class="list-group-item"><strong>Producto:</strong> {{ purchase.product }} x {{ purchase.amount_product }}</li> 
+                <li class="list-group-item"><strong>Precio Por Unidad:</strong> {{ purchase.product.price }}</li>
+            {% comment %} {% endfor %}   {% endcomment %}
+                <li class="list-group-item"><strong>Total:</strong> {{ purchase.purchase.total_price }}</li> 
+
         </ul>
         <div class="d-flex justify-content-center">
-            <button onclick="window.location.href='/client'" class="btn btn-primary" style="color:white">Regresar</button>
+            <button onclick="window.location.href='/purchase'" class="btn btn-primary" style="color:white; margin-top:0.5em;">Regresar</button>
         </div>
     </div>
 {% endblock content %}

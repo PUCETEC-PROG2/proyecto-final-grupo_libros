@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Cliente:{% endblock title %}
+{% block title %}{% endblock title %}
 {% block content %}
     <div class="container">
-        <ul class="list-group">
+        <ul class="list-group" style="margin-top: 2em;">
             <li class="list-group-item"><strong>Nombres:</strong> {{ client.first_name }}</li>
             <li class="list-group-item"><strong>Apellidos:</strong> {{ client.last_name }}</li>
             <li class="list-group-item"><strong>Cédula:</strong> {{ client.dni }}</li> 
@@ -12,7 +12,7 @@
             <li class="list-group-item"><strong>Dirección:</strong> {{ client.address }}</li> 
         </ul>
         <div class="d-flex justify-content-center">
-            <button onclick="window.location.href='/client'" class="btn btn-primary" style="color:white">Regresar</button>
+            <button onclick="window.location.href='/client'" class="btn btn-primary" style="color:white; margin-top: 1em;">Regresar</button>
         </div>
     </div>
 {% endblock content %}

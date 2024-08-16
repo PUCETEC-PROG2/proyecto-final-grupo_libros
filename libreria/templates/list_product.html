@@ -7,11 +7,14 @@
             {% if user.is_authenticated %}
                 <div class="d-flex">
                     <a href="{% url "libreria:add_product" %}">
-                        <button style=" margin-bottom: 2em;" class="btn btn-outline-primary btn-lg btn-block">
-                            <h6>Agregar Producto</h6>
-                        </button>
+                        <button style=" margin-bottom: 1em; margin-right: 0.5em; color:white" class="btn btn-primary me-2">Agregar Producto</button>
                     </a>
+                    <button onclick="window.location.href='/'" class="btn btn-primary ms-2" style="margin-bottom: 1em; color:white">Regresar</button>
                 </div>
+            {% else %}
+            <div class="d-flex" style="margin-top: 2em">
+                <button onclick="window.location.href='/'" class="btn btn-primary ms-2" style="margin-bottom: 1em; color:white">Regresar</button>    
+            </div>
             {% endif %}
             <div class="card-group">
                 {% for product in products %}
@@ -20,23 +23,20 @@
                             <img src="{{ product.picture.url }}" alt="{{ product }}" style="height:300px; object-fit: scale-down;">
                             <div class="card-body d-flex flex-column"> 
                                 <div class="mb-auto">
-                                    <h6 class="card-title"><strong>{{ product }}</strong></h6>
+                                    <h6 class="card-title"><strong>Título: {{ product }}</strong></h6>
                                     <p class="card-subtitle"><strong>Precio: ${{ product.price }}</strong></p>
                                 </div>
                                 <div class="d-flex justify-content-center mt-3">
-                                    <a href="{{ product.id }}" class="btn btn-primary mr-2"><i class="fa-solid fa-eye"></i></a>
+                                    <a href="{{ product.id }}" class="btn mr-2"><i class="fa-solid fa-eye"></i></a>
                                     {% if user.is_authenticated %}
-                                        <a href="edit_product/{{ product.id }}" class="btn btn-primary mr-2"><i class="fa-solid fa-pencil"></i></a>
-                                        <a href="delete_product/{{ product.id }}" onclick="confirmScript(event, 'eliminar {{ product }}?, esta acción es irreversible.')" class="btn btn-danger mr-2"><i class="fa-solid fa-trash"></i></a>
+                                        <a href="edit_product/{{ product.id }}" class="btn mr-2"><i class="fa-solid fa-pencil"></i></a>
+                                        <a href="delete_product/{{ product.id }}" onclick="confirmScript(event, 'eliminar: {{ product }}?, esta acción es irreversible.')" class="btn mr-2"><i class="fa-solid fa-trash"></i></a>
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
-            </div>
-            <div class="d-flex justify-content-center">
-                <button onclick="window.location.href='/'" class="btn btn-primary" style="color:white">Regresar</button>
             </div>
         </div>
 {% endblock content %}

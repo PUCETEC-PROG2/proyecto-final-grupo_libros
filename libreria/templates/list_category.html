@@ -4,30 +4,30 @@
 {% block content %}
     <div class="container">
         <p style="font-size: 1.7em; margin-top: 1em; margin-bottom: 1em;" class= "text-center"><strong>Categorías</strong></p>
+        {% if user.is_authenticated %}
+            <div class="d-flex" style="margin-top: 2em">
+                <a href="{% url "libreria:add_category" %}">
+                    <button style="margin-bottom: 1em; margin-right: 0.5em; color:white" class="btn btn-primary me-2">Agregar Categoría</button>
+                </a>
+                <button onclick="window.location.href='/'" class="btn btn-primary ms-2" style="margin-bottom: 1em; color:white">Regresar</button>
+            </div>
+        {% else %}
+        <div class="d-flex" style="margin-top: 2em">
+            <button onclick="window.location.href='/'" class="btn btn-primary ms-2" style="margin-bottom: 1em; color:white">Regresar</button>
+        </div>
+        {% endif %}
         <ul class="list-group">
             {% for category in categorys %}
                 <li class="list-group-item">
-                    <a href="#" style=" margin-right: 1em;">
+                    <a style=" margin-right: 1em;font-size: 1.3em;">
                         {{ category.category }}
                     </a>
                     {% if user.is_authenticated %}
-                        <a href="edit_category/{{ category.id }}" class="btn btn-link"><i class="fa-solid fa-pencil"></i></a>
-                        <a href="delete_category/{{ category.id }}" onclick="confirmScript(event, 'eliminar {{ category }}?, esta acción es irreversible.')" class="btn btn-link"><i class="fa-solid fa-trash"></i></a>
+                        <a href="edit_category/{{ category.id }}" class="btn"><i class="fa-solid fa-pencil"></i></a>
+                        <a href="delete_category/{{ category.id }}" onclick="confirmScript(event, 'eliminar la categoría: {{ category }}?, esta acción es irreversible.')" class="btn"><i class="fa-solid fa-trash"></i></a>
                     {% endif %}
                 </li>
             {% endfor %}
         </ul>
-        {% if user.is_authenticated %}
-            <div class="d-flex">
-                <a href="{% url "libreria:add_category" %}">
-                    <button style=" margin-bottom: 2em;" class="btn btn-outline-primary btn-lg btn-block">
-                        <h6>Agregar Categorías</h6>
-                    </button>
-                </a>
-            </div>
-        {% endif %}
-        <div class="d-flex justify-content-center">
-            <button onclick="window.location.href='/'" class="btn btn-primary" style="color:white">Regresar</button>
-        </div>
     </div>
 {% endblock content %}

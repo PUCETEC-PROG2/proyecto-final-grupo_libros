@@ -3,7 +3,7 @@
 {% block title %}Agregar Compra{% endblock %}
 {% block content %}
     <div class="container">
-        <div class="row justify-content-center" style="margin-top: 5em; margin-bottom: 5em;">
+        <div class="row justify-content-center" style="margin-top: 2em; margin-bottom: 5em;">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
@@ -22,19 +22,16 @@
                             </div>
 
                             <div class="d-flex justify-content-center">
-                                <button id="agregar-detalle" type="button" class="btn btn-outline-secondary btn-lg">
-                                    <h6>Agregar Otro</h6>
-                                </button>
+                                <button id="agregar-detalle" type="button" class="btn btn-success">Agregar Otro</button>
                             </div>
 
                             <div class="d-flex justify-content-center mt-3">
                                 <h4>Total: $<span id="total">0.00</span></h4>
                             </div>
 
-                            <div class="d-flex justify-content-center mt-3">
-                                <button class="btn btn-outline-primary btn-lg btn-block" type="submit">
-                                    <h6>Guardar</h6>
-                                </button>
+                            <div class="d-flex">
+                                <button class="btn btn-primary me-2" type="submit" style="margin-top: 1em; margin-right: 0.5em; color:white;">Guardar</button>
+                                <button type="button" onclick="window.location.href='/purchase'" class="btn btn-primary ms-2" style="margin-top: 1em; color:white">Cancelar</button>
                             </div>
                         </form>
                     </div>
@@ -76,7 +73,7 @@
                 nuevoDetalle.innerHTML = `
                     <input type="hidden" name="form-${totalForms}-DELETE" value="0">
                     ${template.replace(/form-0-/g, `form-${totalForms}-`)}
-                    <button type="button" class="btn btn-danger btn-sm eliminar-detalle">Eliminar</button>
+                    <button type="button" class="btn btn-danger btn-sm eliminar-detalle" style="color:white">Eliminar</button>
                 `;
 
                 container.appendChild(nuevoDetalle);

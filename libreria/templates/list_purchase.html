@@ -7,23 +7,18 @@
         {% if user.is_authenticated %}
             <div class="d-flex">
                 <a href="{% url "libreria:add_purchase" %}">
-                    <button style=" margin-bottom: 2em;" class="btn btn-outline-primary btn-lg btn-block">
-                        <h6>Agregar Compra</h6>
-                    </button>
+                    <button style=" margin-bottom: 1em; margin-right: 0.5em; color:white;" class="btn btn-primary me-2">Agregar Compra</button>
                 </a>
+                <button onclick="window.location.href='/'" class="btn btn-primary ms-2" style="color:white; margin-bottom: 1em;">Regresar</button>
             </div>
         {% endif %}
         <ul class="list-group">
             {% for purchase in purchases %}
-                <li class="list-group-item">
-                    <a href="{{ purchase.id }}" style=" margin-right: 1em;">
+                <li class="list-group-item" style="font-size: 1.2em;">
                         {{ purchase.purchase }}
-                    </a>
+                    <a href="{{ purchase.id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
                 </li>
             {% endfor %}
         </ul>
-        <div class="d-flex justify-content-center">
-            <button onclick="window.location.href='/'" class="btn btn-primary" style="color:white">Regresar</button>
-        </div>
     </div>
 {% endblock content %}

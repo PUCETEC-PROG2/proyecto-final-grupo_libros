@@ -5,6 +5,7 @@ from .models import Client, Category, Product, Purchase, Purchase_Detail
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from libreria.forms import ClientForm, CategoryForm, ProductForm, PurchaseForm, DetailPurchaseFormSet
+from django.db import transaction
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -78,7 +79,7 @@ def add_client(request):
         form = ClientForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('libreria:index')
+            return redirect('libreria:list_client')
     else:
         form = ClientForm()
     
@@ -91,15 +92,15 @@ def edit_client(request, id):
         form = ClientForm(request.POST, request.FILES, instance=client)
         if form.is_valid():
             form.save()
-            return redirect('libreria:index')
+            return redirect('libreria:list_client')
     else:
         form = ClientForm(instance=client)
         
     return render(request, 'client_form.html', {'form': form})
 
 @login_required
-def delete_client(request, client_id):
-    client = get_object_or_404(Client, pk = client_id)
+def delete_client(request, id):
+    client = get_object_or_404(Client, pk = id)
     client.delete()
     return redirect("libreria:list_client")    
 
@@ -170,23 +171,29 @@ def add_purchase(request):
         formset = DetailPurchaseFormSet(request.POST)
 
         if purchase_form.is_valid() and formset.is_valid():
-            purchase = purchase_form.save()
+            with transaction.atomic():
+                purchase = purchase_form.save()
 
-            for form in formset:
-                if form.cleaned_data:
-                    product = form.cleaned_data.get('product')
-                    amount_product = form.cleaned_data.get('amount_product')
-                    
-                    Purchase_Detail.objects.create(
-                        purchase=purchase,
-                        product=product,
-                        amount_product=amount_product,
-                        unit_price_product=product.price
-                    )
-            
-            purchase.update_total()
-            
-            return redirect('libreria:list_purchase') 
+                for form in formset:
+                    if form.cleaned_data:
+                        product = form.cleaned_data.get('product')
+                        amount_product = form.cleaned_data.get('amount_product')
+                        
+                        Purchase_Detail.objects.create(
+                            purchase=purchase,
+                            product=product,
+                            amount_product=amount_product,
+                            unit_price_product=product.price
+                        )
+
+                        product.stock -= amount_product
+                        product.save()
+                
+                purchase.update_total_price()
+                
+                return redirect('libreria:list_purchase') 
+        else:
+            print("Errores en formset:", formset.errors)
     else:
         purchase_form = PurchaseForm()
         formset = DetailPurchaseFormSet()

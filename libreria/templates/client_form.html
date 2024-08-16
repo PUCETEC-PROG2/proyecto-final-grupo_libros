@@ -2,29 +2,54 @@
 {% load static %}
 {% block title %}Clientes{% endblock title %}
 {% block content %}
-    <div class="container">
-        <div class="row justify-content-center" style="margin-top: 5em; margin-bottom: 5em;">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="card-title text-center"><strong>Agregar Cliente</strong></h2>
-                        <form method="post" enctype="multipart/form-data">
-                            <div class="form-group">
-                                {% csrf_token %}
-                                {{ form.as_p }}
+<div class="container">
+    <div class="row justify-content-center" style="margin-top: 2em; margin-bottom: 5em;">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center"><strong>Agregar Cliente</strong></h2>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.dni.label_tag }}
+                            {{ form.dni }}
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <div class="text-danger">
+                                {% for error in form.email.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
                             </div>
-                            <div class="d-flex">
-                                <button type="submit" class="btn btn-primary btn-lg me-2" style="margin-top: 1em; margin-right: 0.5em; color:white">
-                                    Guardar
-                                </button>
-                                <button type="button" onclick="window.location.href='/client'" class="btn btn-primary btn-lg ms-2" style="margin-top: 1em; color:white">
-                                    Cancelar
-                                </button>
-                            </div> 
-                        </form>
-                    </div> 
+                        {% endif %}
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.phone.label_tag }}
+                            {{ form.phone }}
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.address.label_tag }}
+                            {{ form.address }}
+                        </div>
+                        <div class="d-flex">
+                            <button type="submit" class="btn btn-primary me-2" style="margin-top: 1em; margin-right: 0.5em; color:white">Guardar</button>
+                            <button type="button" onclick="window.location.href='/client'" class="btn btn-primary ms-2" style="margin-top: 1em; color:white">Cancelar</button>
+                        </div> 
+                    </form>
                 </div> 
-            </div>                
-        </div>
+            </div> 
+        </div>                
     </div>
+</div>
+
 {% endblock content %}

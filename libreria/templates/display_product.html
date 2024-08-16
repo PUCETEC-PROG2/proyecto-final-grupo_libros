@@ -4,7 +4,7 @@
 {% block content %}
     <div class="container">
         <div class="d-flex justify-content-center">
-            <img src="{{ product.picture.url }}" alt="{{ product }}" style="width:300; height:300px; margin-bottom: 2em;">
+            <img src="{{ product.picture.url }}" alt="{{ product }}" style="width:300; height:300px; margin-bottom: 1em; margin-top: 2em;">
         </div>
         <ul class="list-group">
             <li class="list-group-item"><strong>Código:</strong> {{ product.code }}</li>
@@ -18,7 +18,8 @@
             <li class="list-group-item"><strong>Condición:</strong> {{ product.condition }}</li>
         </ul>
         <div class="d-flex justify-content-center">
-            <button onclick="window.location.href='/product'" class="btn btn-primary" style="color:white">Regresar</button>
+            <button onclick="window.location.href='/product'" class="btn btn-primary" style="color:white; margin-top: 0.5em;">Regresar</button>
         </div>
     </div>
 {% endblock content %}
+

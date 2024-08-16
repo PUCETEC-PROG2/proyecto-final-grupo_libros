@@ -1,28 +1,53 @@
 from django.db import models
 from django.forms import ValidationError
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.utils.translation import gettext_lazy as _
 
 class Category(models.Model):
     category = models.CharField(max_length=30, null=False)
 
     def __str__(self) -> str:
         return self.category
+    
 class Client(models.Model):
     first_name = models.CharField(max_length=75, null=False)
     last_name = models.CharField(max_length=75, null=False)
-    dni = models.IntegerField(null=False)
-    email = models.EmailField(null=False)
-    phone = models.IntegerField(null=False)
+    dni = models.CharField(max_length=10, null=False, unique=True)
+    email = models.EmailField(null=False, unique=True)
+    phone = models.CharField(max_length=10, null=False)
     address = models.CharField(max_length=100, null=False)
 
     def clean(self):
         super().clean()
-        if Client.objects.filter(dni=self.dni).exists():
-            raise ValidationError({'dni': 'Cédula ya registrada'})
-    
-    def clean(self):
-        super().clean()
-        if Client.objects.filter(phone=self.phone).exists():
-            raise ValidationError({'phone': 'Télefono ya registrado'})   
+
+        try:
+            validate_email(self.email)
+        except ValidationError:
+            raise ValidationError({'email': _('Ingrese un correo electrónico válido.')})
+
+        if self.pk:
+            if Client.objects.filter(dni=self.dni).exclude(pk=self.pk).exists():
+                raise ValidationError({'dni': 'Cédula ya registrada'})
+        else:
+            if Client.objects.filter(dni=self.dni).exists():
+                raise ValidationError({'dni': 'Cédula ya registrada'})
+
+        if self.pk:
+            if Client.objects.filter(email=self.email).exclude(pk=self.pk).exists():
+                raise ValidationError({'email': 'Correo ya registrado'})
+        else:
+            if Client.objects.filter(email=self.email).exists():
+                raise ValidationError({'email': 'Correo ya registrado'})
+            
+        if self.pk:
+            if Client.objects.filter(phone=self.phone).exclude(pk=self.pk).exists():
+                raise ValidationError({'phone': 'Teléfono ya registrado'})
+        else:
+            if Client.objects.filter(phone=self.phone).exists():
+                raise ValidationError({'phone': 'Teléfono ya registrado'})
+            
+
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
@@ -30,12 +55,12 @@ class Client(models.Model):
 class Product(models.Model):
     code = models.CharField(max_length=10, null=False, unique=True)
     book_title = models.CharField(max_length=200, null=False)
-    year = models.IntegerField(null=False)
+    year = models.CharField(null=False)
     author = models.CharField(max_length=75, null=False)
     publisher = models.CharField(max_length=75, null=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock = models.IntegerField(default=1)
+    stock = models.PositiveIntegerField(default=1)
     PRODUCT_CONDITION = {
         ('Nuevo', 'Nuevo'),
         ('Usado', 'Usado'),
@@ -48,15 +73,15 @@ class Product(models.Model):
         return self.book_title
     
 class Purchase(models.Model):
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, null=False)
 
     def __str__(self) -> str:
-        return f'Venta {self.id} - {self.client}'
+        return f'{self.date} - Venta {self.id} - {self.client}'
     
     def update_total_price(self):
-        self.total_price = sum(purchase.subtotal() for purchase in self.purchase.all())
+        self.total_price = sum(detail.subtotal() for detail in self.purchase_detail_set.all())
         self.save()
 
 class Purchase_Detail(models.Model):
@@ -71,6 +96,8 @@ class Purchase_Detail(models.Model):
     def __str__(self) -> str:
         return f"{self.amount_product} x {self.product} en Venta {self.purchase.id}"
     
+
+
 
 
 
