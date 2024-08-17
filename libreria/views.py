@@ -4,9 +4,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import Client, Category, Product, Purchase, Purchase_Detail
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
-from libreria.forms import ClientForm, CategoryForm, ProductForm, PurchaseForm, DetailPurchaseFormSet
-from django.db import transaction
-
+from libreria.forms import ClientForm, CategoryForm, ProductForm, PurchaseForm, PurchaseDetailForm
+from django.contrib import messages
+from django.utils import timezone
+import pytz
 class CustomLoginView(LoginView):
     template_name = 'login.html'
 
@@ -166,36 +167,69 @@ def list_purchase(request):
 
 @login_required
 def add_purchase(request):
+    clients = Client.objects.all()
+    products = Product.objects.all()
+
+    tz_local = pytz.timezone('America/Bogota')
+    date_time = timezone.now().astimezone(tz_local).strftime('%Y-%m-%dT%H:%M')
+
     if request.method == 'POST':
-        purchase_form = PurchaseForm(request.POST)
-        formset = DetailPurchaseFormSet(request.POST)
+        client_id = request.POST.get('client')
+        date = request.POST.get('date')
+        product_ids = request.POST.getlist('products[]')  
+        amount_product = request.POST.getlist('amount_product[]') 
 
-        if purchase_form.is_valid() and formset.is_valid():
-            with transaction.atomic():
-                purchase = purchase_form.save()
+        if not client_id:
+            messages.error(request, 'El ID del cliente no puede estar vacío.')
+            return redirect('libreria:add_purchase')
 
-                for form in formset:
-                    if form.cleaned_data:
-                        product = form.cleaned_data.get('product')
-                        amount_product = form.cleaned_data.get('amount_product')
-                        
-                        Purchase_Detail.objects.create(
-                            purchase=purchase,
-                            product=product,
-                            amount_product=amount_product,
-                            unit_price_product=product.price
-                        )
+        try:
+            client = Client.objects.get(id=client_id)
+        except Client.DoesNotExist:
+            messages.error(request, 'Cliente no encontrado.')
+            return redirect('libreria:add_purchase')
 
-                        product.stock -= amount_product
-                        product.save()
-                
-                purchase.update_total_price()
-                
-                return redirect('libreria:list_purchase') 
-        else:
-            print("Errores en formset:", formset.errors)
-    else:
-        purchase_form = PurchaseForm()
-        formset = DetailPurchaseFormSet()
+        purchase = Purchase.objects.create(
+            client=client,
+            date=date,
+            total_price=0, 
+        )
 
-    return render(request, 'purchase_form.html', {'purchase_form': purchase_form, 'formset': formset})
+        total_price = 0
+        for units, product_id in enumerate(product_ids):
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                messages.error(request, f'Producto con ID {product_id} no encontrado.')
+                return redirect('libreria:add_purchase')
+
+            amount = int(amount_product[units])
+            total = product.price * amount
+            total_price += total
+
+            if product.stock < amount:
+                messages.error(request, f'No hay suficiente stock para el producto con ID {product_id}.')
+                return redirect('libreria:add_purchase')
+
+            Purchase_Detail.objects.create(
+                purchase=purchase,
+                product=product,
+                amount_product=amount
+            )
+
+            product.stock -= amount
+            if product.stock < 0:
+                product.stock = 0
+            product.save()
+
+        purchase.total_price = total_price
+        purchase.save()
+
+        return redirect('libreria:list_purchase')
+
+    context = {
+        'clients': clients,
+        'products': products,
+        'date_time': date_time,
+    }
+    return render(request, 'purchase_form.html', context)

@@ -15,7 +15,7 @@
         <ul class="list-group">
             {% for purchase in purchases %}
                 <li class="list-group-item" style="font-size: 1.2em;">
-                        {{ purchase.purchase }}
+                        {{ purchase.purchase.client }}
                     <a href="{{ purchase.id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
                 </li>
             {% endfor %}

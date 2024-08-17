@@ -10,24 +10,52 @@
                         <h2 class="card-title text-center"><strong>Agregar Compra</strong></h2>
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                            {{ purchase_form.as_p }}
-                            
-                            <div id="detalles-container">
-                                {{ formset.management_form }}
-                                {% for form in formset %}
-                                    <div class="form-group detalle-form">
-                                        {{ form.as_p }}
-                                    </div>
-                                {% endfor %}
+                            <div class="mb-3">
+                                <label for="client" class="form-label">Cliente</label>
+                                <select name="client" id="client" class="form-control" required>
+                                    <option value="" disabled selected>Seleccione un cliente</option>
+                                    {% for client in clients %}
+                                        <option value="{{ client.id }}">{{ client }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
-
-                            <div class="d-flex justify-content-center">
-                                <button id="agregar-detalle" type="button" class="btn btn-success">Agregar Otro</button>
+            
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Fecha y Hora</label>
+                                <input type="datetime-local" name="date" id="date" class="form-control" value="{{ date_time }}" required>
                             </div>
-
-                            <div class="d-flex justify-content-center mt-3">
-                                <h4>Total: $<span id="total">0.00</span></h4>
-                            </div>
+            
+                            <h5 class="mt-4 mb-3"><strong>Libros Disponibles</strong></h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th style="width: 10%;">Código</th>
+                                        <th style="width: 20%;">Título</th>
+                                        <th style="width: 15%;">Precio Unitario</th>
+                                        <th style="width: 5%;">Stock</th>
+                                        <th style="width: 5%;">Cantidad</th>
+                                        <th style="width: 5%;"><i class="fa-solid text-primary fa-circle-check"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                    <tr>
+                                        <td>{{ product.code }}</td>
+                                        <td>{{ product.book_title }}</td>
+                                        <td>${{ product.price }}</td>
+                                        <td class="text-center">{{ product.stock }}</td>
+                                        <td class="text-center">
+                                            <input type="number" name="amount_product[]" value="1" min="1" class="form-control w-100">
+                                        </td>
+                                        <td class="text-center pl-4">
+                                            <input type="checkbox" name="products[]" value="{{ product.id }}" class="form-check-input">
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                
+                            <h5 class="text-left">Total Venta: $<span id="total-price">0.00</span></h5>
 
                             <div class="d-flex">
                                 <button class="btn btn-primary me-2" type="submit" style="margin-top: 1em; margin-right: 0.5em; color:white;">Guardar</button>
@@ -41,54 +69,55 @@
     </div>
 
     <script>
-        function actualizarTotal() {
-            let total = 0;
-            document.querySelectorAll('#detalles-container .detalle-form').forEach(form => {
-                const cantidadProducto = parseFloat(form.querySelector('input[name$=amount_product]').value) || 0;
-                const precioUnitarioProducto = parseFloat(form.querySelector('input[name$=unit_price_product]').value) || 0;
-
-                total += cantidadProducto * precioUnitarioProducto;
-            });
-            // Actualiza el total en el HTML
-            document.getElementById('total').textContent = total.toFixed(2);
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            const container = document.getElementById('detalles-container');
-            const originalDetail = container.querySelector('.detalle-form');
-            const template = originalDetail ? originalDetail.innerHTML.replace(/form-0-/g, '') : '';
-
-            container.addEventListener('input', function(event) {
-                // Solo actualiza el total 
-                if (event.target.matches('input[name$=amount_product], input[name$=unit_price_product]')) {
-                    actualizarTotal();
+            const form = document.getElementById('form');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const totalPurchaseSpan = document.getElementById('total-price');
+    
+            function updateTotal() {
+                let total = 0;
+                checkboxes.forEach((checkbox, index) => {
+                    const row = checkbox.closest('tr');
+                    const amountInput = row.querySelector('input[type="number"]');
+                    const price = parseFloat(row.cells[2].innerText.replace('$', ''));
+                    
+                    if (checkbox.checked) {
+                        amountInput.disabled = false;
+                        total += price * parseInt(amountInput.value);
+                    } else {
+                        amountInput.disabled = true;
+                        amountInput.value = 1;
+                    }
+                });
+                totalPurchaseSpan.innerText = total.toFixed(2);
+            }
+    
+            function validateForm(event) {
+                let atLeastOneChecked = false;
+                checkboxes.forEach((checkbox) => {
+                    if (checkbox.checked) {
+                        atLeastOneChecked = true;
+                    }
+                });
+    
+                if (!atLeastOneChecked) {
+                    event.preventDefault();
+                    alert('Debe seleccionar al menos un producto para guardar la venta.');
                 }
+            }
+    
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateTotal);
             });
-
-            document.getElementById('agregar-detalle').addEventListener('click', function() {
-                const totalForms = parseInt(document.querySelector('#id_form-TOTAL_FORMS').value, 10);
-                const nuevoDetalle = document.createElement('div');
-                nuevoDetalle.classList.add('form-group', 'detalle-form');
-                
-                nuevoDetalle.innerHTML = `
-                    <input type="hidden" name="form-${totalForms}-DELETE" value="0">
-                    ${template.replace(/form-0-/g, `form-${totalForms}-`)}
-                    <button type="button" class="btn btn-danger btn-sm eliminar-detalle" style="color:white">Eliminar</button>
-                `;
-
-                container.appendChild(nuevoDetalle);
-                document.querySelector('#id_form-TOTAL_FORMS').value = totalForms + 1;
-                actualizarTotal();
+    
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', updateTotal);
             });
-
-            container.addEventListener('click', function(event) {
-                if (event.target.classList.contains('eliminar-detalle')) {
-                    const detalle = event.target.closest('.detalle-form');
-                    detalle.querySelector('input[name$="-DELETE"]').value = "1";
-                    detalle.style.display = "none";
-                    actualizarTotal();
-                }
-            });
+    
+            form.addEventListener('submit', validateForm);
+    
+            updateTotal();
         });
-    </script>
+    </script>   
+
 {% endblock %}

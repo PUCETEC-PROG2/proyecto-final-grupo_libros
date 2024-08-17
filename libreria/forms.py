@@ -1,6 +1,6 @@
 from django import forms 
 from .models import Client, Category, Product, Purchase, Purchase_Detail
-from django.forms import formset_factory
+from django.core.exceptions import ValidationError
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -36,6 +36,17 @@ class ClientForm(forms.ModelForm):
             }
         }
 
+    def clean_dni(self):
+        dni = self.cleaned_data.get('dni')
+        try:
+            dni = int(dni)
+        except (TypeError, ValueError):
+            raise forms.ValidationError('El campo de cédula solo admite valores numéricos.')
+
+        if dni < 0:
+            raise forms.ValidationError('El campo de cédula no admite valores negativos.')
+        return dni
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -63,15 +74,44 @@ class ProductForm(forms.ModelForm):
             'condition': 'Condición',
         }
 
+    def clean_year(self):
+        year = self.cleaned_data.get('year')
+        try:
+            year = int(year)
+        except (TypeError, ValueError):
+            raise forms.ValidationError('Año inválido. Debe ser un número entero.')
+
+        if year < 0:
+            raise forms.ValidationError('El año no puede ser negativo.')
+        return year
+    
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+
+        if price < 0:
+            raise ValidationError("El precio del libro no puede ser negativo.")
+
+        return price
+    
+    def clean_stock(self):
+        stock = self.cleaned_data.get('stock')
+
+        if stock < 0:
+            raise ValidationError("El stock no puede ser negativo.")
+
+        return stock
+
 class PurchaseForm(forms.ModelForm):
     class Meta:
         model = Purchase
-        fields = ['client']
+        fields = ['client', 'date']
         widgets = {
             'client':forms.Select(attrs={'class': 'form-control-file'}),
+            'date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
         }
         labels = {
             'client': 'Cliente',
+            'date': 'Fecha',
         }
 
 class PurchaseDetailForm(forms.ModelForm):
@@ -80,10 +120,10 @@ class PurchaseDetailForm(forms.ModelForm):
         fields = ['product', 'amount_product']
         widgets = {
             'product':forms.Select(attrs={'class': 'form-control-file'}),
-            'amount_product':forms.NumberInput(attrs={'class': 'form-control'}),
+            'amount_product':forms.NumberInput(attrs={'class': 'form-control', 'min':1}),
         }
         labels = {
-            'product': 'Producto',
+            'product': 'Libro',
             'amount_product': 'Unidades del producto',
         }
         
@@ -95,6 +135,3 @@ class PurchaseDetailForm(forms.ModelForm):
             if product and amount_product:
                 if amount_product > product.stock: 
                     self.add_error('amount_product', f'La cantidad supera al stock disponible de este producto. Unidades existentes: {product.stock}')
-
-
-DetailPurchaseFormSet = formset_factory(PurchaseDetailForm, extra=1)

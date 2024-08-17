@@ -46,8 +46,6 @@ class Client(models.Model):
         else:
             if Client.objects.filter(phone=self.phone).exists():
                 raise ValidationError({'phone': 'Teléfono ya registrado'})
-            
-
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
@@ -73,25 +71,17 @@ class Product(models.Model):
         return self.book_title
     
 class Purchase(models.Model):
-    date = models.DateField(auto_now_add=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    date = models.DateTimeField(null=False)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, null=False)
 
     def __str__(self) -> str:
         return f'{self.date} - Venta {self.id} - {self.client}'
     
-    def update_total_price(self):
-        self.total_price = sum(detail.subtotal() for detail in self.purchase_detail_set.all())
-        self.save()
-
 class Purchase_Detail(models.Model):
     purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount_product = models.PositiveIntegerField()
-    unit_price_product = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def subtotal(self):
-        return self.amount_product * self.unit_price_product
     
     def __str__(self) -> str:
         return f"{self.amount_product} x {self.product} en Venta {self.purchase.id}"
