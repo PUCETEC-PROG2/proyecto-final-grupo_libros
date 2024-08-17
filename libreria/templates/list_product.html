@@ -3,11 +3,11 @@
 {% block title %}Productos{% endblock title %}
 {% block content %}
         <div class="container">
-            <h2 style="margin-top: 1em; margin-bottom: 1em;" class="text-center">Productos</h2>
+            <h2 style="font-size: 1.7em; margin-top: 1em; margin-bottom: 1em;" class="text-center"><strong>Libros</strong></h2>
             {% if user.is_authenticated %}
                 <div class="d-flex">
                     <a href="{% url "libreria:add_product" %}">
-                        <button style=" margin-bottom: 1em; margin-right: 0.5em; color:white" class="btn btn-primary me-2">Agregar Producto</button>
+                        <button style=" margin-bottom: 1em; margin-right: 0.5em; color:white" class="btn btn-primary me-2">Agregar Libro</button>
                     </a>
                     <button onclick="window.location.href='/'" class="btn btn-primary ms-2" style="margin-bottom: 1em; color:white">Regresar</button>
                 </div>

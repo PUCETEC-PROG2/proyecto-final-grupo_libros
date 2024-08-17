@@ -76,7 +76,7 @@ class Purchase(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, null=False)
 
     def __str__(self) -> str:
-        return f'{self.date} - Venta {self.id} - {self.client}'
+        return f'Compra {self.id}'
     
 class Purchase_Detail(models.Model):
     purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)

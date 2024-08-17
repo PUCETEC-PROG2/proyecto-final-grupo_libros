@@ -2,6 +2,7 @@
 <html>
   {% load static %}
   <head>
+    <link rel="icon" href="{% static 'book-icon.jpg' %}">
     <title>{% block title %}{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -13,13 +14,43 @@
             event.preventDefault();
           }
       }
-    </script>    
+    </script> 
+    <style>
+      body {
+          font-family: 'American Typewriter', serif;
+      }
+
+      .table th, .table td {
+        white-space: nowrap; 
+        vertical-align: middle;
+       }
+
+      .table-bordered {
+        border-collapse: collapse;
+      }
+
+      .table-bordered th,
+      .table-bordered td {
+          border: 1px solid black; 
+      }
+
+      .table-bordered thead th {
+          border-bottom: 2px solid black;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+      .form-check-input {
+        margin: 0; 
+      }
+    </style>   
   </head>
     <body>
         <div class="container">
-            <div class="p-4 text-left">
-                <img src={% static "logo.jpg" %} style="height:310px; object-fit: scale-down;">
-                <h1>Werther</h1>
+            <div class="p-4 text-center">
+                <img src={% static "loogoo.jpg" %} style="height:200px; width:200px; object-fit: scale-down;">
+                <h2 style="margin-top:0em; margin-bottom:0em; font-family:American Typewriter;"><strong>Werther</strong></h2>
             </div>
             <nav class="navbar navbar-expand-lg navbar-dark navbar-primary bg-secondary">
                 <div class="container-fluid">
@@ -27,29 +58,29 @@
                     <span class="navbar-toggler-icon"></span>
                   </button>
                   <div class="collapse navbar-collapse" id="navbarText">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav d-flex mx-auto mb-2 mb-lg-0">
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url "libreria:index" %}">Inicio</a>
+                        <a class="nav-link" href="{% url "libreria:index" %}" style="color:white;">Inicio</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url "libreria:list_category" %}">Categorias</a>
+                        <a class="nav-link" href="{% url "libreria:list_category" %}" style="color:white;">Categorias</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url "libreria:list_product" %}">Libros</a>
+                        <a class="nav-link" href="{% url "libreria:list_product" %}" style="color:white;">Libros</a>
                       </li>
                       {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url "libreria:list_client" %}">Clientes</a>
+                            <a class="nav-link" href="{% url "libreria:list_client" %}" style="color:white;">Clientes</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" href="{% url "libreria:list_purchase" %}">Compras</a>
+                          <a class="nav-link" href="{% url "libreria:list_purchase" %}" style="color:white;">Compras</a>
                       </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url "logout" %}" onclick="confirmScript(event, 'salir?')">Cerrar Sesión</a>
+                            <a class="nav-link" href="{% url "logout" %}" onclick="confirmScript(event, 'salir?')" style="color:white;">Cerrar Sesión</a>
                         </li>
                       {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url "libreria:login" %}">Acceder</a>
+                            <a class="nav-link" href="{% url "libreria:login" %}" style="color:white;">Acceder</a>
                         </li>
                       {% endif %}
                     </ul>

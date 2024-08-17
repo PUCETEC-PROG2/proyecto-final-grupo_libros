@@ -2,30 +2,31 @@
 {% load static %}
 {% block title %}Agregar Compra{% endblock %}
 {% block content %}
-    <div class="container">
-        <div class="row justify-content-center" style="margin-top: 2em; margin-bottom: 5em;">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="card-title text-center"><strong>Agregar Compra</strong></h2>
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="client" class="form-label">Cliente</label>
-                                <select name="client" id="client" class="form-control" required>
-                                    <option value="" disabled selected>Seleccione un cliente</option>
-                                    {% for client in clients %}
-                                        <option value="{{ client.id }}">{{ client }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-            
-                            <div class="mb-3">
-                                <label for="date" class="form-label">Fecha y Hora</label>
-                                <input type="datetime-local" name="date" id="date" class="form-control" value="{{ date_time }}" required>
-                            </div>
-            
-                            <h5 class="mt-4 mb-3"><strong>Libros Disponibles</strong></h5>
+<div class="container">
+    <div class="row justify-content-center" style="margin-top: 2em; margin-bottom: 5em;">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center"><strong>Agregar Compra</strong></h2>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="client" class="form-label">Cliente</label>
+                            <select name="client" id="client" class="form-control" required>
+                                <option value="" disabled selected>Seleccione un cliente</option>
+                                {% for client in clients %}
+                                    <option value="{{ client.id }}">{{ client }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+        
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Fecha y Hora</label>
+                            <input type="datetime-local" name="date" id="date" class="form-control" value="{{ date_time }}" required>
+                        </div>
+        
+                        <h5 class="mt-4 mb-3"><strong>Libros Disponibles</strong></h5>
+                        <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr class="text-center">
@@ -47,26 +48,29 @@
                                         <td class="text-center">
                                             <input type="number" name="amount_product[]" value="1" min="1" class="form-control w-100">
                                         </td>
-                                        <td class="text-center pl-4">
-                                            <input type="checkbox" name="products[]" value="{{ product.id }}" class="form-check-input">
+                                        <td class="text-center">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <input type="checkbox" name="products[]" value="{{ product.id }}" class="form-check-input">
+                                            </div>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
-                
-                            <h5 class="text-left">Total Venta: $<span id="total-price">0.00</span></h5>
+                        </div>
+            
+                        <h5 class="text-left">Total Venta: $<span id="total-price">0.00</span></h5>
 
-                            <div class="d-flex">
-                                <button class="btn btn-primary me-2" type="submit" style="margin-top: 1em; margin-right: 0.5em; color:white;">Guardar</button>
-                                <button type="button" onclick="window.location.href='/purchase'" class="btn btn-primary ms-2" style="margin-top: 1em; color:white">Cancelar</button>
-                            </div>
-                        </form>
-                    </div>
+                        <div class="d-flex">
+                            <button class="btn btn-primary me-2" type="submit" style="margin-top: 1em; margin-right: 0.5em; color:white;">Guardar</button>
+                            <button type="button" onclick="window.location.href='/purchase'" class="btn btn-primary ms-2" style="margin-top: 1em; color:white">Cancelar</button>
+                        </div>
+                    </form>
                 </div>
-            </div>                
-        </div>
+            </div>
+        </div>                
     </div>
+</div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

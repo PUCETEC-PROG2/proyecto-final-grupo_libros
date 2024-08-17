@@ -2,27 +2,32 @@
 {% load static %}
 {% block title %}Clientes{% endblock title %}
 {% block content %}
-    <div class="container">
-        <p style="font-size: 1.7em; margin-top: 1em; margin-bottom: 1em;" class= "text-center"><strong>Clientes</strong></p>
-        {% if user.is_authenticated %}
-            <div class="d-flex">
-                <a href="{% url "libreria:add_client" %}">
-                    <button style=" margin-bottom: 1em; margin-right: 0.5em; color: white" class="btn btn-primary me-2">Agregar Cliente</button>
-                </a>
-                <button onclick="window.location.href='/'" class="btn btn-primary ms-2" style="margin-bottom: 1em; color:white">Regresar</button>
-            </div>
-        {% endif %}
-        <ul class="list-group">
-            {% for client in clients %}
-                <li class="list-group-item" style="font-size: 1.3em;">
-                        {{ client }}
-                    {% if user.is_authenticated %}
+<div class="container">
+    <p style="font-size: 1.7em; margin-top: 1em; margin-bottom: 1em;" class="text-center"><strong>Clientes</strong></p>
+    {% if user.is_authenticated %}
+        <div class="d-flex">
+            <a href="{% url 'libreria:add_client' %}">
+                <button style="margin-bottom: 1em; margin-right: 0.5em; color: white" class="btn btn-primary me-2">Agregar Cliente</button>
+            </a>
+            <button onclick="window.location.href='/'" class="btn btn-primary ms-2" style="margin-bottom: 1em; color:white">Regresar</button>
+        </div>
+    {% endif %}
+    <ul class="list-group">
+        {% for client in clients %}
+            <li class="list-group-item d-flex justify-content-between align-items-center" style="font-size: 1.3em;">
+                <div class="client-name">
+                    {{ client }}
+                </div>
+                {% if user.is_authenticated %}
+                    <div class="client-actions">
                         <a href="{{ client.id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
-                        <a href="edit_client/{{ client.id }}" class="btn "><i class="fa-solid fa-pencil"></i></a>
-                        <a href="delete_client/{{ client.id }}" onclick="confirmScript(event, 'eliminar al cliente: {{ client }}?, esta acción es irreversible.')" class="btn"><i class="fa-solid fa-trash"></i></a>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+                        <a href="edit_client/{{ client.id }}" class="btn"><i class="fa-solid fa-pencil"></i></a>
+                        <a href="delete_client/{{ client.id }}" onclick="confirmScript(event, '¿Eliminar al cliente: {{ client }}? Esta acción es irreversible.')" class="btn"><i class="fa-solid fa-trash"></i></a>
+                    </div>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
 {% endblock content %}
