@@ -152,16 +152,17 @@ def delete_product(request, product_id):
 # Purchase
 
 def purchase(request, purchase_id):
-    purchase = get_object_or_404(Purchase_Detail, pk = purchase_id)
-    template = loader.get_template('display_purchase.html')
+    purchase = get_object_or_404(Purchase, pk = purchase_id)
+    purchase_details = Purchase_Detail.objects.filter(purchase=purchase)
     context = {
-        'purchase': purchase
+        'purchase': purchase,
+        'purchase_details': purchase_details,
     }
-    return HttpResponse(template.render(context, request))
+    return render(request, 'display_purchase.html', context)
 
 @login_required
 def list_purchase(request):
-    purchases = Purchase_Detail.objects.order_by('purchase')
+    purchases = Purchase.objects.order_by('date')
     template = loader.get_template('list_purchase.html')
     return HttpResponse(template.render({'purchases': purchases}, request))
 
@@ -179,8 +180,13 @@ def add_purchase(request):
         product_ids = request.POST.getlist('products[]')  
         amount_product = request.POST.getlist('amount_product[]') 
 
+        # Validaciones
         if not client_id:
             messages.error(request, 'El ID del cliente no puede estar vacío.')
+            return redirect('libreria:add_purchase')
+
+        if not product_ids:
+            messages.error(request, 'Debe seleccionar al menos un producto.')
             return redirect('libreria:add_purchase')
 
         try:
@@ -189,41 +195,54 @@ def add_purchase(request):
             messages.error(request, 'Cliente no encontrado.')
             return redirect('libreria:add_purchase')
 
-        purchase = Purchase.objects.create(
-            client=client,
-            date=date,
-            total_price=0, 
-        )
-
         total_price = 0
+        purchase_details = []
+
         for units, product_id in enumerate(product_ids):
             try:
                 product = Product.objects.get(id=product_id)
             except Product.DoesNotExist:
-                messages.error(request, f'Producto con ID {product_id} no encontrado.')
+                messages.error(request, 'Producto no encontrado.')
                 return redirect('libreria:add_purchase')
 
             amount = int(amount_product[units])
+            if amount <= 0:
+                messages.error(request, f'La cantidad para el libro {product.book_title} no puede ser menor o igual a 0.')
+                return redirect('libreria:add_purchase')
+
+            if product.stock < amount:
+                messages.error(request, f'No hay suficiente stock del libro: {product.book_title}.')
+                return redirect('libreria:add_purchase')
+
             total = product.price * amount
             total_price += total
 
-            if product.stock < amount:
-                messages.error(request, f'No hay suficiente stock para el producto con ID {product_id}.')
-                return redirect('libreria:add_purchase')
+            purchase_details.append({
+                'product': product,
+                'amount': amount
+            })
 
+        if total_price <= 0:
+            messages.error(request, 'El total de la venta debe ser mayor a 0.')
+            return redirect('libreria:add_purchase')
+
+        purchase = Purchase.objects.create(
+            client=client,
+            date=date,
+            total_price=total_price, 
+        )
+
+        for detail in purchase_details:
             Purchase_Detail.objects.create(
                 purchase=purchase,
-                product=product,
-                amount_product=amount
+                product=detail['product'],
+                amount_product=detail['amount']
             )
 
-            product.stock -= amount
-            if product.stock < 0:
-                product.stock = 0
-            product.save()
-
-        purchase.total_price = total_price
-        purchase.save()
+            detail['product'].stock -= detail['amount']
+            if detail['product'].stock < 0:
+                detail['product'].stock = 0
+            detail['product'].save()
 
         return redirect('libreria:list_purchase')
 

@@ -8,6 +8,13 @@
             <div class="card">
                 <div class="card-body">
                     <h2 class="card-title text-center"><strong>Agregar Compra</strong></h2>
+                    {% if messages %}
+                        <div class="alert alert-danger">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -30,30 +37,31 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr class="text-center">
-                                        <th style="width: 10%;">Código</th>
-                                        <th style="width: 20%;">Título</th>
-                                        <th style="width: 15%;">Precio Unitario</th>
-                                        <th style="width: 5%;">Stock</th>
-                                        <th style="width: 5%;">Cantidad</th>
-                                        <th style="width: 5%;"><i class="fa-solid text-primary fa-circle-check"></i></th>
+                                        <th style="width: 25%;">Título</th>
+                                        <th style="width: 20%;">Precio Unitario</th>
+                                        <th style="width: 15%;">Cantidad</th>
+                                        <th style="width: 5%;">Seleccionar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for product in products %}
+                                    {% if product.stock > 0 %}
                                     <tr>
-                                        <td>{{ product.code }}</td>
                                         <td>{{ product.book_title }}</td>
                                         <td>${{ product.price }}</td>
-                                        <td class="text-center">{{ product.stock }}</td>
                                         <td class="text-center">
-                                            <input type="number" name="amount_product[]" value="1" min="1" class="form-control w-100">
+                                            <input type="number" name="amount_product[]" value="1" min="1" class="form-control">
+                                            {% if product.stock < 4 %}
+                                                <div class="text-danger" style="font-size:12px;">Pocas unidades en stock</div>
+                                            {% endif %}
                                         </td>
-                                        <td class="text-center">
-                                            <div class="d-flex align-items-center justify-content-center">
+                                        <td class="text-center" style="padding: 0;">
+                                            <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
                                                 <input type="checkbox" name="products[]" value="{{ product.id }}" class="form-check-input">
                                             </div>
                                         </td>
                                     </tr>
+                                    {% endif %}
                                     {% endfor %}
                                 </tbody>
                             </table>
@@ -72,6 +80,7 @@
     </div>
 </div>
 
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('form');
@@ -83,7 +92,7 @@
                 checkboxes.forEach((checkbox, index) => {
                     const row = checkbox.closest('tr');
                     const amountInput = row.querySelector('input[type="number"]');
-                    const price = parseFloat(row.cells[2].innerText.replace('$', ''));
+                    const price = parseFloat(row.cells[1].innerText.replace('$', ''));
                     
                     if (checkbox.checked) {
                         amountInput.disabled = false;

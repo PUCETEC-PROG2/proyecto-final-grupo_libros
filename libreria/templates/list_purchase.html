@@ -17,10 +17,10 @@
             <li class="list-group-item d-flex justify-content-between align-items-center" style="font-size: 1.2em;">
                 <div class="purchase-info d-flex align-items-center">
                     <div class="purchase-date" style="margin-right: 3em;">
-                        {{ purchase.purchase.date|date:"d/m/Y - h:i A" }}
+                        {{ purchase.date|date:"d/m/Y - h:i A" }}
                     </div>
                     <div class="purchase-client">
-                        {{ purchase.purchase.client }}
+                        {{ purchase.client }}
                     </div>
                 </div>
                 <div class="purchase-actions">

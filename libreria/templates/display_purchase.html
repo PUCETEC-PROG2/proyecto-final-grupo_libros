@@ -3,15 +3,17 @@
 {% block title %}{{ purchase.date }}{% endblock title %}
 {% block content %}
     <div class="container">
-        <p style="font-size: 1.8em; margin-top: 1em; margin-bottom: 1em;" class= "text-center"><strong>{{ purchase.purchase | capfirst }}</strong></p>
-            <ul class="list-group" style="font-size: 1.3em;">
-                <li class="list-group-item"><strong>Código del Producto:</strong> {{ purchase.product.code }}</li>
-                <li class="list-group-item"><strong>Nombre del Producto:</strong> {{ purchase.product }}</li> 
-                <li class="list-group-item"><strong>Cantidad:</strong> {{ purchase.amount_product }}</li>
-                <li class="list-group-item"><strong>Precio Por Unidad:</strong> {{ purchase.product.price }}</li>
-            </ul>
-        <ul class="list-group" style="font-size: 1.3em; margin-top: 1em;">
-            <li class="list-group-item"><strong>Total:</strong> {{ purchase.purchase.total_price }}</li> 
+        <p style="font-size: 1.8em; margin-top: 1em; margin-bottom: 1em;" class= "text-center"><strong>{{ purchase | capfirst }}</strong></p>
+            {% for detail in purchase_details %}
+                <ul class="list-group" style="font-size: 1.2em; margin-top:0.5em;">
+                    <li class="list-group-item"><strong>Código del Producto:</strong> {{ detail.product.code }}</li>
+                    <li class="list-group-item"><strong>Nombre del Producto:</strong> {{ detail.product }}</li> 
+                    <li class="list-group-item"><strong>Cantidad:</strong> {{ detail.amount_product }}</li>
+                    <li class="list-group-item"><strong>Precio Por Unidad:</strong> {{ detail.product.price }}</li>
+                </ul>
+            {% endfor %}
+        <ul class="list-group" style="font-size: 1.3em; margin-top: 1.5em;">
+            <li class="list-group-item"><strong>Total:</strong> {{ purchase.total_price }}</li> 
         </ul>
         <div class="d-flex justify-content-center">
             <button onclick="window.location.href='/purchase'" class="btn btn-primary" style="color:white; margin-top:0.5em;">Regresar</button>
