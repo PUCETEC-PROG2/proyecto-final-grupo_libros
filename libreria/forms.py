@@ -48,17 +48,6 @@ class ClientForm(forms.ModelForm):
             raise forms.ValidationError('El campo de cédula no admite valores negativos.')
         return dni
     
-    def validar_telefono(self, phone):
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT validar_telefono(%s)", [phone])
-            is_valid = cursor.fetchone()[0]
-        return is_valid
-    
-    def clean_phone(self):
-        phone = self.cleaned_data.get('phone')
-        if not Client().validar_telefono(phone):
-            raise forms.ValidationError('Ingrese un número de teléfono válido.')
-        return phone
 
 class ProductForm(forms.ModelForm):
     class Meta:

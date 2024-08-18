@@ -20,13 +20,6 @@ class Client(models.Model):
 
     def clean(self):
         super().clean()
-        if not self.validar_telefono(self.phone):
-            raise ValidationError('Ingrese un número de teléfono válido.')
-
-        try:
-            validate_email(self.email)
-        except ValidationError:
-            raise ValidationError({'email': _('Ingrese un correo electrónico válido.')})
 
         if self.pk:
             if Client.objects.filter(dni=self.dni).exclude(pk=self.pk).exists():
